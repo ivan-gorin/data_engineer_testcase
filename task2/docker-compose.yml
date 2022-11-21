@@ -7,12 +7,27 @@ services:
     ports:
       - 5000:5000
     environment:
-      - DATABASE_URL=postgresql://api_user:api_password@db:5432/api_db
+      - DATABASE_URL=postgresql://api_user:api_password@db:5432/
+      - DATABASE_NAME=api_db
     volumes:
       - ./api:/app
     command: uvicorn src.main:app --reload --host 0.0.0.0 --port 5000
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
+  test-api:
+    build: ./api
+    environment:
+      - DATABASE_URL=postgresql://api_user:api_password@db:5432/
+      - DATABASE_NAME=api_db
+    volumes:
+      - ./api:/app
+    command: pytest -v
+    depends_on:
+      db:
+        condition: service_healthy
+
 
   db:
     image: postgres:latest
@@ -24,6 +39,11 @@ services:
       - POSTGRES_DB=api_db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

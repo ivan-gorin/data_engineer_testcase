@@ -10,7 +10,7 @@ dist
 .tox
 .coverage
 html/*
-__pycache__
+__pycache__/
 
 # pytest
 .pytest_cache

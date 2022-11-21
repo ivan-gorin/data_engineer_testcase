@@ -4,13 +4,11 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy_utils import create_database, drop_database
 import pytest
 
-from ..database import Base
+from ..database import Base, DATABASE_URL
 from ..main import app, get_db
 from ..models import Product, Category, Association
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:1234@localhost:5432/test_db"
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(DATABASE_URL + "test_db")
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
